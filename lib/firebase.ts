@@ -4,4 +4,4 @@ import { getAuth } from "firebase/auth";
 
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const auth = getAuth(app); 
