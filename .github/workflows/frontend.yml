@@ -32,6 +32,25 @@ jobs:
           cd Aerospace-Dashboard
           npm run lint
 
+      - name: Create Firebase Config File
+        run: |
+          echo '${{ secrets.FIREBASE_CONFIG }}' > firebase_config.json
+          cat firebase_config.json | jq '.' > Aerospace-Dashboard/firebase_config.ts
+          echo "export default " | cat - Aerospace-Dashboard/firebase_config.ts > temp && mv temp Aerospace-Dashboard/firebase_config.ts
+          cat Aerospace-Dashboard/firebase_config.ts
+
+      - name: Create .env file
+        run: |
+          if [ -f ".env" ]; then
+            rm .env
+          fi
+          
+          touch .env
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
+
+          ls -la
+          cat .env
+
       - name: Build Next.js App
         run: |
           cd Aerospace-Dashboard
