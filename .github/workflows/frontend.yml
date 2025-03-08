@@ -1,0 +1,70 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Next.js Linting & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: |
+          cd Aerospace-Dashboard
+          npm install
+
+      - name: Lint Code
+        run: |
+          cd Aerospace-Dashboard
+          npm run lint
+
+      - name: Build Next.js App
+        run: |
+          cd Aerospace-Dashboard
+          npm run build
+
+  deploy:
+    name: Deploy Frontend to AWS ECS
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials using IAM Role
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::600627329849:role/GitHubActions-Deploy-Frontend
+          aws-region: us-east-2
+          role-session-name: GitHubActionsFrontend
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO_FRONTEND }}
+
+      - name: Build and push Docker image
+        run: |
+          cd Aerospace-Dashboard
+          docker build -t frontend-app .
+          docker tag frontend-app:latest ${{ secrets.ECR_REPO_FRONTEND }}:latest
+          docker push ${{ secrets.ECR_REPO_FRONTEND }}:latest
+
+      - name: Deploy to AWS ECS
+        run: |
+          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER_NAME }} --service ${{ secrets.ECS_SERVICE_FRONTEND }} --force-new-deployment
