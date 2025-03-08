@@ -56,7 +56,7 @@ export default function DataPage() {
   if (!user) return <p className="text-center p-4">Redirecting to login...</p>;
   if (isLoading) return <p className="text-center p-4">Loading...</p>;
   if (error){
-    console.log(error) 
+    console.log(error)
     return <p className="text-center p-4 text-red-500">Error loading data.</p>; 
   }
 
