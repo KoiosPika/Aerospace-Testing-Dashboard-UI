@@ -24,12 +24,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd Aerospace-Dashboard
           npm install
 
       - name: Lint Code
         run: |
-          Aerospace-Dashboard
           npm run lint
 
       - name: Create Firebase Config File
@@ -53,7 +51,6 @@ jobs:
 
       - name: Build Next.js App
         run: |
-          cd Aerospace-Dashboard
           npm run build
 
   deploy:
