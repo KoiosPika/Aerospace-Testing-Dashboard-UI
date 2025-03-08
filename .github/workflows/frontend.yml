@@ -73,7 +73,7 @@ jobs:
       - name: Configure AWS credentials using IAM Role
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::600627329849:role/GitHubActions-Deploy-Frontend
+          role-to-assume: arn:aws:iam::600627329849:role/ECS_TaskExecutionRole_AerospaceFrontend
           aws-region: us-east-2
           audience: sts.amazonaws.com
           role-session-name: GitHubActionsFrontend
