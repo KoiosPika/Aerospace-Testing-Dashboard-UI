@@ -41,14 +41,16 @@ jobs:
 
           touch firebase_config.ts 
 
-          echo '${{ secrets.FIREBASE_CONFIG }}' | jq '.' > firebase_config.json
+          echo '${{ secrets.FIREBASE_CONFIG }}' > firebase_config.json
 
-          cat firebase_config.json
+          jq empty firebase_config.json > /dev/null 2>&1 || { echo "Invalid JSON"; exit 1; }
 
           echo "export const firebaseConfig = " > firebase_config.ts
           cat firebase_config.json >> firebase_config.ts
 
           echo ";" >> firebase_config.ts
+
+          cat firebase_config.ts
 
       - name: Create .env file
         run: |
