@@ -31,23 +31,16 @@ jobs:
           npm run lint
 
       - name: Create Firebase Config File
+        uses: jsdaniell/create-json@v1
+        with:
+          name: "firebase_config.json"
+          json: ${{ secrets.FIREBASE_CONFIG }}
+
+      - name: Convert Firebase Config to TypeScript
         run: |
-          if [ -f "firebase_config.ts" ]; then 
-              rm firebase_config.ts 
-          fi
-          if [ -f "firebase_config.json" ]; then 
-              rm firebase_config.json
-          fi
-
-          touch firebase_config.ts 
-
-          echo '${{ secrets.FIREBASE_CONFIG }}' | sed 's/^"\|"$//g' | jq '.' > firebase_config.json || { echo "Invalid JSON"; exit 1; }
-
           echo "export const firebaseConfig = " > firebase_config.ts
           cat firebase_config.json >> firebase_config.ts
-
           echo ";" >> firebase_config.ts
-
           cat firebase_config.ts
 
       - name: Create .env file
