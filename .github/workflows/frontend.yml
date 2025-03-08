@@ -32,10 +32,22 @@ jobs:
 
       - name: Create Firebase Config File
         run: |
+          if [ -f "firebase_config.ts" ]; then 
+              rm firebase_config.ts 
+          fi
+
+          touch firebase_config.ts 
+
           echo '${{ secrets.FIREBASE_CONFIG }}' > firebase_config.json
-          cat firebase_config.json | jq '.' > firebase_config.json
-          echo "export default " | cat - firebase_config.ts > temp && mv temp firebase_config.ts
-          cat firebase_config.ts
+
+          cat firebase_config.json | jq '.' > formatted_firebase_config.json
+
+          echo "export const firebaseConfig = " > firebase_config.ts
+          cat formatted_firebase_config.json >> firebase_config.ts
+
+          echo ";" >> firebase_config.ts
+
+          rm formatted_firebase_config.json
 
       - name: Create .env file
         run: |
