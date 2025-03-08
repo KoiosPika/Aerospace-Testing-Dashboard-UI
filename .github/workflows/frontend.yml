@@ -33,7 +33,6 @@ jobs:
       - name: Create Firebase Config File
         run: |
           echo '${{ secrets.FIREBASE_CONFIG }}' > firebase_config.json
-          cat firebase_config.json | jq '.' > firebase_config.ts
           echo "export default " | cat - firebase_config.ts > temp && mv temp firebase_config.ts
           cat firebase_config.ts
 
