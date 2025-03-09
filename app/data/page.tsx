@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getTestData } from "../../lib/api";
 import { auth } from "@/lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { getAuth, getIdToken, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/shared/Navbar";
 import DataTable from "@/components/shared/DataTable";
@@ -45,7 +45,17 @@ export default function DataPage() {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["testData", filters],
-    queryFn: () => getTestData(filters),
+    queryFn: async () => {
+      const auth = getAuth();
+      const user = auth.currentUser;
+  
+      if (!user) {
+        throw new Error("User is not authenticated");
+      }
+  
+      const token = await getIdToken(user);
+      return getTestData(filters, token);
+    },
     enabled: !!user,
   });
 
