@@ -40,6 +40,25 @@ jobs:
           name: "firebase_config.json"
           json: ${{ secrets.FIREBASE_CONFIG }}
 
+      - name: Convert Firebase Config to TypeScript
+        run: |
+          echo "export const firebaseConfig = " > firebase_config.ts
+          cat firebase_config.json >> firebase_config.ts
+          echo ";" >> firebase_config.ts
+          cat firebase_config.ts
+
+      - name: Create .env file
+        run: |
+          if [ -f ".env" ]; then
+            rm .env
+          fi
+          
+          touch .env
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" >> .env
+
+          ls -la
+          cat .env
+
       - name: Build Next.js App
         run: |
           npm run build
