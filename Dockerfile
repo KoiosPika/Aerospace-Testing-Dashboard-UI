@@ -9,9 +9,16 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Copy the rest of the app
-COPY firebase_config.ts ./
-COPY .env ./
 COPY . .
+
+COPY firebase_config.json ./
+
+RUN echo "export const firebaseConfig = " > firebase_config.ts \
+    && cat firebase_config.json >> firebase_config.ts \
+    && echo ";" >> firebase_config.ts
+
+# Generate .env file inside the container
+RUN touch .env && echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
 
 # Build the Next.js application
 RUN npm run build
