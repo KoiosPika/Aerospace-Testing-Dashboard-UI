@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuth, getIdToken } from "firebase/auth";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://3.22.79.0:8000";
 
 export const getTestData = async (filters: any) => {
   const auth = getAuth();
