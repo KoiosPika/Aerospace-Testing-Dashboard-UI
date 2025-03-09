@@ -16,8 +16,6 @@ jobs:
   deploy:
     name: Build & Deploy Frontend to AWS ECS
     runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'push'
 
     steps:
       - name: Checkout repository
