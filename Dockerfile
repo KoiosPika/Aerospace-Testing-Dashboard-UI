@@ -9,10 +9,9 @@ COPY package.json package-lock.json ./
 RUN npm install
 
 # Copy the rest of the app
+COPY firebase_config.ts ./
+COPY .env ./
 COPY . .
-
-# Disable ESLint during building
-ENV NEXT_DISABLE_ESLINT=1
 
 # Build the Next.js application
 RUN npm run build
