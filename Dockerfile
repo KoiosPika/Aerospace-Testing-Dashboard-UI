@@ -8,16 +8,18 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 
-# Copy the rest of the app
+# Copy all source files
 COPY . .
 
+# Ensure Firebase config is available inside the container
 COPY firebase_config.json ./
 
+# Convert JSON to TypeScript (fixes the Next.js import issue)
 RUN echo "export const firebaseConfig = " > firebase_config.ts \
     && cat firebase_config.json >> firebase_config.ts \
     && echo ";" >> firebase_config.ts
 
-# Generate .env file inside the container
+# Ensure .env is set
 RUN touch .env && echo "NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL" >> .env
 
 # Build the Next.js application
@@ -28,11 +30,12 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy the built application from the builder stage
+# Copy built application from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/firebase_config.ts ./firebase_config.ts
 
 # Expose port 3000
 EXPOSE 3000
